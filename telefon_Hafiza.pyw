@@ -7,6 +7,8 @@ import os
 #Gerekenler
 #ModuleNotFoundError: No module named 'numpy' kod = python -m pip install numpy
 #ModuleNotFoundError: No module named 'cv2' kod = python -m pip install opencv-python
+#python -m PyInstaller --onefile --noconsole telefon_Hafiza.pyw
+#python -m PyInstaller --onefile --noconsole --distpath "C:\KendiKlasorun" telefon_Hafiza.pyw
 
 # Video oluşturmak için fonksiyon
 def create_video(filename, size_gb, progress_var, progress_label):
