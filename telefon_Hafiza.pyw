@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox, filedialog
 import numpy as np
 import cv2
 import os
+import threading  # threading modülünü ekleyin
 
 #Gerekenler
 #ModuleNotFoundError: No module named 'numpy' kod = python -m pip install numpy
@@ -68,7 +69,7 @@ def convert_bytes_to_gb():
     except ValueError:
         messagebox.showerror("Hata", "Geçersiz giriş")
 
-# Video oluşturma işlevi
+# Video oluşturma işlevi (thread içinde çalıştırılacak)
 def on_create_video():
     try:
         size_gb = float(entry_size.get())
@@ -85,7 +86,9 @@ def on_create_video():
         if file_path:
             progress_var.set(0)
             progress_label.config(text="0%")
-            create_video(file_path, size_gb, progress_var, progress_label)
+            
+            # Yeni bir thread başlat ve video oluşturma işlemini başlat
+            threading.Thread(target=create_video, args=(file_path, size_gb, progress_var, progress_label)).start()
     except ValueError as ve:
         messagebox.showerror("Hata", str(ve))
     except Exception as e:
@@ -94,11 +97,11 @@ def on_create_video():
 # Ana pencere oluştur
 root = tk.Tk()
 root.title("Video Oluşturucu")
-root.geometry("343x400")  # Pencere boyutunu 400x400 piksel olarak ayarla
+root.geometry("343x400")  # Pencere boyutunu 343x400 piksel olarak ayarla
 root.configure(bg='#282828')  # Pencere arka plan rengini beyaz olarak ayarla
 
 # Widget'ları oluştur ve aralıklarla yerleştir
-tk.Label(root, text="Boyut (Bytes):", fg="blue").grid(row=0, column=0, pady=10, padx=10, sticky="w")
+tk.Label(root, text="Boyut (Bytes):", fg="blue", bg='#282828').grid(row=0, column=0, pady=10, padx=10, sticky="w")
 entry_bytes = tk.Entry(root)
 entry_bytes.grid(row=0, column=1, pady=10, padx=10)
 
@@ -106,11 +109,11 @@ entry_bytes.grid(row=0, column=1, pady=10, padx=10)
 convert_button = tk.Button(root, text="GB'ye Çevir", command=convert_bytes_to_gb)
 convert_button.grid(row=0, column=2, pady=10, padx=10)
 
-tk.Label(root, text="Boyut (GB):", fg="red").grid(row=1, column=0, pady=10, padx=10, sticky="w")
+tk.Label(root, text="Boyut (GB):", fg="red", bg='#282828').grid(row=1, column=0, pady=10, padx=10, sticky="w")
 entry_size = tk.Entry(root)
 entry_size.grid(row=1, column=1, pady=10, padx=10)
 
-tk.Label(root, text="Dosya Adı:", fg="green").grid(row=2, column=0, pady=10, padx=10, sticky="w")
+tk.Label(root, text="Dosya Adı:", fg="green", bg='#282828').grid(row=2, column=0, pady=10, padx=10, sticky="w")
 entry_filename = tk.Entry(root)
 entry_filename.grid(row=2, column=1, pady=10, padx=10)
 
@@ -124,7 +127,7 @@ progress_bar = ttk.Progressbar(root, variable=progress_var, maximum=100)
 progress_bar.grid(row=3, columnspan=3, pady=10, padx=10, sticky="we")
 
 # İlerleme etiketini aralıklı olarak yerleştir
-progress_label = tk.Label(root, text="0%")
+progress_label = tk.Label(root, text="0%", bg='#282828', fg="white")
 progress_label.grid(row=4, columnspan=3, pady=10, padx=10, sticky="we")
 
 # Tkinter olay döngüsünü başlat
